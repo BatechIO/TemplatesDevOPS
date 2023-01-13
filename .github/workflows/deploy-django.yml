@@ -31,9 +31,11 @@ on:
         required: true
       AWS_REGION:
         required: true
+      AWS_ARN_ROLE:
+        required: true
+      AWS_SESSION_NAME:
+        required: true
 
-env:
-  ECR_REGISTRY: 519738254832.dkr.ecr.us-east-2.amazonaws.com
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -54,8 +56,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ARN_ROLE }}
+          role-session-name: ${{ secrets.AWS_SESSION_NAME }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
