@@ -64,6 +64,9 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ARN_ROLE }}
           role-session-name: ${{ secrets.AWS_SESSION_NAME }}
           aws-region: ${{ secrets.AWS_REGION }}
+        permissions:
+          id-token: write
+          contents: read
 
       - name: Login to Amazon ECR
         id: login-ecr
