@@ -54,7 +54,7 @@ jobs:
           python-version: 3.9
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v2.1.0
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2.0.0
@@ -87,7 +87,7 @@ jobs:
         run: |
           echo "ENVIRONMENT -> ${{ inputs.ENVIRONMENT }}"
           docker buildx create --use
-          docker buildx build --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --build-arg INPUT_ENVIRONMENT=${{ inputs.ENVIRONMENT }} --build-arg INPUT_GITHUB_TOKEN=${{ steps.githubAppAuth.outputs.token }} --build-arg INPUT_AWS_ACCESS=${{ secrets.AWS_ACCESS_KEY }} --build-arg INPUT_AWS_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} --build-arg INPUT_AWS_REGION=${{ secrets.AWS_REGION }} -t ${{ env.RELEASE_IMAGE }} -t ${{ env.RELEASE_IMAGE_LATEST }} --push --provenance=false .
+          docker buildx build --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --build-arg INPUT_ENVIRONMENT=${{ inputs.ENVIRONMENT }} --build-arg INPUT_GITHUB_TOKEN=${{ steps.githubAppAuth.outputs.token }} --build-arg INPUT_AWS_ACCESS=${{ secrets.AWS_ACCESS_KEY }} --build-arg INPUT_AWS_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} --build-arg INPUT_AWS_REGION=${{ secrets.AWS_REGION }} -t ${{ env.RELEASE_IMAGE }} -t ${{ env.RELEASE_IMAGE_LATEST }} --push .
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
