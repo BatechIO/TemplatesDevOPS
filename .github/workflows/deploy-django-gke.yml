@@ -1,0 +1,70 @@
+name: Deploy to GCP GKE
+# Controls when the action will run.
+on:
+  workflow_call:
+    inputs:
+      ENVIRONMENT:
+        required: true
+        type: string
+      ECR_REPOSITORY:
+        required: true
+        type: string
+      KUBE_NAMESPACE:
+        required: true
+        type: string
+      DEPLOYMENT_NAME:
+        required: true
+        type: string
+      CONTAINER_APP_NAME:
+        required: true
+        type: string
+      RELEASE_REVISION:
+        required: true
+        type: string
+
+    secrets:
+      KUBE_CONFIG_DATA:
+        required: true
+      AWS_REGION:
+        required: true
+      AWS_ARN_ROLE:
+        required: true
+      AWS_SESSION_NAME:
+        required: true
+
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deploy-eks:
+    name: Deploy to GKE
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Set up gcloud Cloud SDK environment
+        uses: google-github-actions/setup-gcloud@v1.1.1
+        with:
+          service_account_key: ${{ secrets.GCP_GKE_SA_KEY }}
+          project_id: ${{ secrets.GCP_GKE_PROJECT }}
+
+      - name: Get GKE Credentials
+        uses: google-github-actions/get-gke-credentials@v1.0.2
+        with:
+          cluster_name: ${{ secrets.GCP_GKE_CLUSTER_NAME }}
+          location: ${{ secrets.GCP_GKE_CLUSTER_LOCATION }}
+          credentials: ${{ secrets.GCP_GKE_SA_KEY }}
+
+      - name: Deploy Kubernetes Pod
+        env:
+          RELEASE_IMAGE: 519738254832.dkr.ecr.us-east-2.amazonaws.com/${{ inputs.ECR_REPOSITORY }}:${{ inputs.RELEASE_REVISION }}
+        run: |-
+          kubectl set image deployment/${{ inputs.DEPLOYMENT_NAME }} ${{ inputs.CONTAINER_APP_NAME }}=${{ env.RELEASE_IMAGE }} -n ${{ inputs.KUBE_NAMESPACE }} 
+
+      - name: Verify Kubernetes deployment
+        run: |-
+          kubectl rollout status deployment ${{ inputs.DEPLOYMENT_NAME }} -n ${{ inputs.KUBE_NAMESPACE }}
+          kubectl get services -o wide -n ${{ inputs.KUBE_NAMESPACE }}
