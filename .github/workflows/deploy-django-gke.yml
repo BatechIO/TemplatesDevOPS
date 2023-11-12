@@ -9,9 +9,6 @@ on:
       ECR_REPOSITORY:
         required: true
         type: string
-      ECR_REPOSITORY_BASE:
-        required: true
-        type: string
       KUBE_NAMESPACE:
         required: true
         type: string
@@ -63,7 +60,7 @@ jobs:
 
       - name: Deploy Kubernetes Pod
         env:
-          RELEASE_IMAGE: ${{ inputs.ECR_REPOSITORY_BASE }}/${{ inputs.ECR_REPOSITORY }}:${{ inputs.RELEASE_REVISION }}
+          RELEASE_IMAGE: 519738254832.dkr.ecr.us-east-2.amazonaws.com/${{ inputs.ECR_REPOSITORY }}:${{ inputs.RELEASE_REVISION }}
         run: |-
           kubectl set image deployment/${{ inputs.DEPLOYMENT_NAME }} ${{ inputs.CONTAINER_APP_NAME }}=${{ env.RELEASE_IMAGE }} -n ${{ inputs.KUBE_NAMESPACE }} 
 
