@@ -23,13 +23,13 @@ on:
         type: string
 
     secrets:
-      KUBE_CONFIG_DATA:
+      GCP_GKE_SA_KEY:
         required: true
-      AWS_REGION:
+      GCP_GKE_PROJECT:
         required: true
-      AWS_ARN_ROLE:
+      GCP_GKE_CLUSTER_NAME:
         required: true
-      AWS_SESSION_NAME:
+      GCP_GKE_CLUSTER_LOCATION:
         required: true
 
 
